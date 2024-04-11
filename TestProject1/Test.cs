@@ -145,5 +145,20 @@ namespace TestProject1
             // Verifica que todos los elementos hayan sido agregados correctamente
             Assert.Equal(totalItems, itemsAdded);
         }
+
+        [Fact]
+        public void testContain()
+        {
+            // Creamos un ConcurrentStack de enteros
+            ConcurrentStack<int> concurrentStack = new ConcurrentStack<int>();
+
+            // Agregamos algunos elementos a la pila
+            concurrentStack.Push(1);
+            concurrentStack.Push(2);
+            concurrentStack.Push(3);
+
+            Assert.True(concurrentStack.Contains(2));
+
+        }
     }
 }
