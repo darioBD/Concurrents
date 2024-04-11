@@ -98,5 +98,52 @@ namespace TestProject1
             // Verifica que todos los elementos hayan sido agregados correctamente
             Assert.Equal(totalItems, itemsAdded);
         }
+
+        [Fact]
+        public void TestSncronizacion2()
+        {
+            ConcurrentQueue<int> concurrentQueue = new ConcurrentQueue<int>();
+
+            int totalItems = 30;
+            int itemsAdded = 0;
+
+            // Agrega elementos a ConcurrentQueue
+            for (int i = 0; i < totalItems; i++)
+            {
+                concurrentQueue.Enqueue(i);
+            }
+
+            // Realiza operaciones de lectura y escritura concurrentes
+            Parallel.Invoke(
+                () =>
+                {
+                    // Extrae elementos de ConcurrentQueue
+                    int count = 0;
+                    int result;
+                    while (concurrentQueue.TryDequeue(out result))
+                    {
+                        count++;
+                    }
+                    Assert.Equal(totalItems, count);
+                },
+                () =>
+                {
+                    // Espera a que se completen las operaciones de extracción de elementos
+                    Thread.Sleep(100);
+
+                    // Agrega elementos adicionales a ConcurrentQueue
+                    for (int i = 0; i < totalItems; i++)
+                    {
+                        concurrentQueue.Enqueue(i);
+                        Interlocked.Increment(ref itemsAdded);
+                    }
+                });
+
+            // Verifica que el recuento final sea correcto
+            Assert.Equal(totalItems, concurrentQueue.Count);
+
+            // Verifica que todos los elementos hayan sido agregados correctamente
+            Assert.Equal(totalItems, itemsAdded);
+        }
     }
 }
